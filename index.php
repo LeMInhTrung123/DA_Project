@@ -12,7 +12,7 @@
     </style>
 </head>
 
-<body>
+<body class="bg-light">
     
     <?php require('inc/header.php'); ?>
 
@@ -76,9 +76,10 @@
 
     <?php require('inc/footer.php'); ?>
        
-
+    <!-- Modal Scripts -->
+    
     <script>
-        var socket = new WebSocket('ws://192.168.110.216:81');
+        var socket = new WebSocket('ws://192.168.1.78:81');
 
 
         socket.onmessage = function(event) {

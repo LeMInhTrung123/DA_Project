@@ -40,12 +40,26 @@
     font-size: 18px;
     text-shadow: 1px 1px 2px black;
 }
-.mb-3{
-    font-weight: bold;
-}
+
 
 .custom-alert{
     position: fixed;
-    top: 25px;
+    top: 80px;
     right: 25px;
+}
+
+
+/* #dashboard-menu{
+    position: fixed;
+    height: 100%;
+} */
+
+@media screen and (max-width: 992px){
+    #dashboard-menu{
+        position: fixed;
+        height: auto;
+    }
+    #main-content{
+        margin-top: 60px;
+    }
 }

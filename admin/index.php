@@ -47,7 +47,7 @@ if ((isset($_SESSION['adminLogin']) && $_SESSION['adminLogin'] == true)) {
     </div>
 
     <?php
-
+    
     if (isset($_POST['login'])) {
         $frm_data = filteration($_POST);
 
