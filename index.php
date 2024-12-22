@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>broTech</title>
+    <title>Trang chủ</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <?php require('inc/links.php');  ?>
@@ -13,7 +13,7 @@
 </head>
 
 <body class="bg-light">
-    
+
     <?php require('inc/header.php'); ?>
 
     <!-- banner -->
@@ -75,9 +75,9 @@
 
 
     <?php require('inc/footer.php'); ?>
-       
+
     <!-- Modal Scripts -->
-    
+
     <script>
         var socket = new WebSocket('ws://192.168.1.78:81');
 
@@ -109,7 +109,7 @@
         }
     </script>
 
-    
+
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         var swiper = new Swiper(".swiper-container", {
@@ -122,6 +122,32 @@
             }
         });
     </script>
+    <script>
+        function loginUser() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            fetch('admin/ajax/login_handler.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `login_user=1&email=${email}&password=${password}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.status === 'success') {
+                        window.location.href = 'index.php'; // Chuyển hướng đến trang chính sau khi đăng nhập thành công
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi:', error);
+                    alert('Có lỗi xảy ra. Vui lòng thử lại.');
+                });
+        }
+    </script>
+
 
 </body>
 

@@ -4,15 +4,15 @@
     adminLogin();
     
 
-    if(isset($_POST['get_general']))
-    {
+    if (isset($_POST['get_general'])) {
         $q = "SELECT * FROM `settings` WHERE `sr_no` = ?";
         $value = [1];
-        $res = select($q,$value,"i");
+        $res = select($q, $value, "i");
         $data = mysqli_fetch_assoc($res);
-        $json_data = json_encode($data);
-        echo $json_data;
+        echo json_encode($data); // Trả về JSON
+        exit;
     }
+    
 
     if(isset($_POST['upd_general']))
     {
@@ -35,16 +35,15 @@
     }
     // Xử lý thêm người dùng
     if (isset($_GET['get_users'])) {
-        $query = $con->query("SELECT id, email, name FROM users");
+        $query = $con->query("SELECT id, email, name FROM users LIMIT 50"); // Giới hạn 50 bản ghi
         $users = [];
-    
         while ($row = $query->fetch_assoc()) {
             $users[] = $row;
         }
-    
         echo json_encode($users);
         exit;
     }
+    
     
     if (isset($_POST['register_user'])) {
         $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);

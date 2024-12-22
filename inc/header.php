@@ -1,7 +1,10 @@
 <!-- header -->
 <?php
-    require('admin/inc/db_config.php');
-    require('admin/inc/essentials.php');
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require('admin/inc/db_config.php');
+require('admin/inc/essentials.php');
 ?>
 
 
@@ -21,14 +24,21 @@
                 <li class="nav-item">
                     <a class="nav-link me-2" href="data.php">Dữ liệu</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link me-2" href="chat.php">Báo cáo</a>
+                </li>
             </ul>
             <div class="d-flex">
-                <button type="button" class="btn btn-outline-dark shadow-none me-lg-3 me-2" data-bs-toggle="modal" data-bs-target="#loginModal">
-                    Đăng nhập
-                </button>
-                <button type="button" class="btn btn-outline-dark shadow-none" data-bs-toggle="modal" data-bs-target="#registerModal">
-                    Đăng kí
-                </button>
+                <?php if (isset($_SESSION['user_email'])): ?>
+                    <span class="me-3 text-success fw-bold">
+                        Chào, <?php echo htmlspecialchars($_SESSION['user_email']); ?>!
+                    </span>
+                    <a href="logout.php" class="btn btn-outline-danger shadow-none">Đăng xuất</a>
+                <?php else: ?>
+                    <button type="button" class="btn btn-outline-dark shadow-none me-lg-3 me-2" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        Đăng nhập
+                    </button>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -38,7 +48,7 @@
 <div class="modal fade" id="loginModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form>
+            <form id="login-form">
                 <div class="modal-header">
                     <h5 class="modal-title d-flex align-items-center">
                         <i class="bi bi-person-circle fs-3 me-2"></i>Đăng nhập người dùng
@@ -48,15 +58,14 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Email:</label>
-                        <input type="email" class="form-control shadow-none">
+                        <input type="email" id="login-email" class="form-control shadow-none" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Mật khẩu:</label>
-                        <input type="password" class="form-control shadow-none">
+                        <input type="password" id="login-password" class="form-control shadow-none" required>
                     </div>
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <button type="submit" class="btn btn-dark shadow-none">Đăng nhập</button>
-                        <a href="javascript: void(0)" class="text-secondary text-decoration-none">Quên mật khẩu</a>
+                        <button type="button" onclick="loginUser()" class="btn btn-dark shadow-none">Đăng nhập</button>
                     </div>
                 </div>
             </form>
@@ -65,45 +74,5 @@
 </div>
 
 
-<!-- đăng kí -->
-<div class="modal fade" id="registerModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <form id="register-form">
-                <div class="modal-header">
-                    <h5 class="modal-title d-flex align-items-center">
-                        <i class="bi bi-person-lines-fill fs-3 me-2"></i>
-                        Đăng kí người dùng
-                    </h5>
-                    <button type="reset" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
 
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-6 ps-0 mb-3">
-                                <label class="form-label">Email:</label>
-                                <input type="email" class="form-control shadow-none" require>
-                            </div>
-                            <div class="col-md-6 ps-0 mb-3">
-                                <label class="form-label">Họ và tên</label>
-                                <input type="text" class="form-control shadow-none" require>
-                            </div>
-                            <div class="col-md-6 ps-0 mb-3">
-                                <label class="form-label">Mật khẩu:</label>
-                                <input type="password" class="form-control shadow-none">
-                            </div>
-                            <div class="col-md-6 ps-0 mb-3">
-                                <label class="form-label">Nhập lại mật khẩu</label>
-                                <input type="password" class="form-control shadow-none">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-dark shadow-none">Đăng kí</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+

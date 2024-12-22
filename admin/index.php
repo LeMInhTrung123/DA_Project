@@ -1,8 +1,10 @@
 <?php
-require('inc/essentials.php');
-require('inc/db_config.php');
+require_once('inc/essentials.php');
+require_once('inc/db_config.php');
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 if ((isset($_SESSION['adminLogin']) && $_SESSION['adminLogin'] == true)) {
     redirect('dashboard.php');
 }
@@ -67,6 +69,7 @@ if ((isset($_SESSION['adminLogin']) && $_SESSION['adminLogin'] == true)) {
     ?>
 
     <?php require('inc/scripts.php'); ?>
+  
 </body>
 
 </html>

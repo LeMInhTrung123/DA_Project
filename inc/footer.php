@@ -10,7 +10,8 @@
             <div class="col-lg-4 p-4">  
                 <h5 class="mb-3">Lối tắt</h5>
                 <a href="index.php" class="d-inline-block mb-2 text-dark text-decoration">Trang chủ</a> <br>
-                <a href="#" class="d-inline-block mb-2 text-dark text-decoration">Dữ liệu</a>
+                <a href="data.php" class="d-inline-block mb-2 text-dark text-decoration">Dữ liệu</a> <br>
+                <a href="chat.php" class="d-inline-block mb-2 text-dark text-decoration">Báo cáo</a>
             </div>
             <div class="col-lg-4 p-4">
                 <h5 class="mb-3">Theo dõi chúng tôi</h5>

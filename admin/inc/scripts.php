@@ -2,7 +2,7 @@
 
 <script>
     function alert(type, msg) {
-        let bs_class = (type == 'success') ? 'alert-success' : 'alert-danger';
+        let bs_class = (type === 'success') ? 'alert-success' : 'alert-danger';
         let element = document.createElement('div');
         element.innerHTML = `
             <div class="alert ${bs_class} alert-dismissible fade show custom-alert" role="alert">
@@ -11,21 +11,17 @@
             </div>
         `;
         document.body.append(element);
+
+        // Tự động ẩn thông báo sau 5 giây
+        setTimeout(() => {
+            element.remove();
+        }, 5000);
     }
 
-    function setActive()
-    {
-        let navbar = document.getElementById('dashboard_menu');
-        let a_tags = navbar.getElementsByTagName('a');
+    
 
-        for(i=0; i<a_tags.length; i++){
-            let file = a_tags[i].href.split('/').pop();
-            let file_name = file.split('.')[0];
 
-            if(document.location.href.indexOf(file_name)>=0){
-                a_tags[i].classList.add('active');
-            }
-        }
-    }
-    setActive();
+
+
+
 </script>
