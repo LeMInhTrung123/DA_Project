@@ -4,7 +4,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
@@ -12,16 +11,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = mysqli_query($con, "SELECT * FROM messages ORDER BY created_at ASC");
         $messages = [];
         while ($row = mysqli_fetch_assoc($result)) {
+            // Thêm trường xác định admin
+            $row['is_admin'] = ($row['user_id'] === 'Admin');
             $messages[] = $row;
         }
+    
+        // Trả về JSON
         echo json_encode(['status' => 'success', 'messages' => $messages]);
         exit;
     }
     
+
     if ($action === 'send_message') {
         $message = mysqli_real_escape_string($con, $_POST['message']);
-        $userId = $_SESSION['user_id'];
-        $senderName = $_SESSION['user_email'];
+        $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'Admin';
+        $senderName = isset($_SESSION['user_email']) ? $_SESSION['user_email'] : 'Admin';
 
         $query = "INSERT INTO messages (user_id, sender_name, message) VALUES ('$userId', '$senderName', '$message')";
         if (mysqli_query($con, $query)) {

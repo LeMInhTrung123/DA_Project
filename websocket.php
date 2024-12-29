@@ -19,7 +19,7 @@ class MyWebSocket implements MessageComponentInterface
         $this->clients->attach($conn);
         $this->connectedClients[$conn->resourceId] = $conn;
         echo "New connection!  ({$conn->resourceId})\n";
-        $conn->send("Welcome to the Server.");
+        
     }
 
     public function onMessage(ConnectionInterface $from, $msg) {
@@ -42,7 +42,7 @@ class MyWebSocket implements MessageComponentInterface
         $conn->close();
     }
 }
-$app = new Ratchet\App("192.168.1.78", 81, "0.0.0.0");
+$app = new Ratchet\App("192.168.1.206", 81, "0.0.0.0");
 $app->route('/', new MyWebSocket, array('*'));
 
 $app->run();

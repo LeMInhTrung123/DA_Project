@@ -1,4 +1,3 @@
-<!-- header -->
 <?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -6,9 +5,6 @@ if (session_status() === PHP_SESSION_NONE) {
 require('admin/inc/db_config.php');
 require('admin/inc/essentials.php');
 ?>
-
-
-
 
 <nav id="nav-bar" class="navbar navbar-expand-lg navbar-light bg-white px-lg-3 py-lg-2 shadow-sm sticky-top">
     <div class="container-fluid">
@@ -19,19 +15,44 @@ require('admin/inc/essentials.php');
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link me-2" aria-current="page" href="index.php">Trang chủ</a>
+                    <a class="nav-link me-2" 
+                       href="index.php" 
+                       style="font-weight: <?php echo basename($_SERVER['SCRIPT_NAME']) == 'index.php' ? 'bold' : 'normal'; ?>; 
+                              color: <?php echo basename($_SERVER['SCRIPT_NAME']) == 'index.php' ? '#007bff' : 'inherit'; ?>; 
+                              border-bottom: <?php echo basename($_SERVER['SCRIPT_NAME']) == 'index.php' ? '2px solid #007bff' : 'none'; ?>;">
+                        Trang chủ
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link me-2" href="data.php">Dữ liệu</a>
+                    <a class="nav-link me-2" 
+                       href="data.php" 
+                       style="font-weight: <?php echo basename($_SERVER['SCRIPT_NAME']) == 'data.php' ? 'bold' : 'normal'; ?>; 
+                              color: <?php echo basename($_SERVER['SCRIPT_NAME']) == 'data.php' ? '#007bff' : 'inherit'; ?>; 
+                              border-bottom: <?php echo basename($_SERVER['SCRIPT_NAME']) == 'data.php' ? '2px solid #007bff' : 'none'; ?>;">
+                        Dữ liệu
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link me-2" href="chat.php">Báo cáo</a>
+                    <a class="nav-link me-2" 
+                       href="chat.php" 
+                       style="font-weight: <?php echo basename($_SERVER['SCRIPT_NAME']) == 'chat.php' ? 'bold' : 'normal'; ?>; 
+                              color: <?php echo basename($_SERVER['SCRIPT_NAME']) == 'chat.php' ? '#007bff' : 'inherit'; ?>; 
+                              border-bottom: <?php echo basename($_SERVER['SCRIPT_NAME']) == 'chat.php' ? '2px solid #007bff' : 'none'; ?>;">
+                        Báo cáo
+                    </a>
                 </li>
             </ul>
             <div class="d-flex">
-                <?php if (isset($_SESSION['user_email'])): ?>
+                <?php if (isset($_SESSION['adminLogin']) && $_SESSION['adminLogin'] === true): ?>
+                    <span class="me-3 text-success fw-bold">
+                        Chào Admin, <?php echo htmlspecialchars($_SESSION['adminName']); ?>!
+                        <i class="bi bi-emoji-smile"></i>
+                    </span>
+                    <a href="logout.php" class="btn btn-outline-danger shadow-none">Đăng xuất</a>
+                <?php elseif (isset($_SESSION['user_email'])): ?>
                     <span class="me-3 text-success fw-bold">
                         Chào, <?php echo htmlspecialchars($_SESSION['user_email']); ?>!
+                        <i class="bi bi-emoji-smile"></i>
                     </span>
                     <a href="logout.php" class="btn btn-outline-danger shadow-none">Đăng xuất</a>
                 <?php else: ?>
@@ -41,10 +62,11 @@ require('admin/inc/essentials.php');
                 <?php endif; ?>
             </div>
         </div>
-    </div>
+    </div>  
 </nav>
 
-<!-- đăng nhập -->
+
+<!-- Đăng nhập Modal -->
 <div class="modal fade" id="loginModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -72,7 +94,3 @@ require('admin/inc/essentials.php');
         </div>
     </div>
 </div>
-
-
-
-

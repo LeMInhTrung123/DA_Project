@@ -1,12 +1,12 @@
 <?php
 require('admin/inc/db_config.php');
 require('admin/inc/essentials.php');
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Kiểm tra xem người dùng đã đăng nhập hay chưa
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['adminLogin']) && !isset($_SESSION['user_email'])) {
     echo "
     <div style='
         display: flex;
@@ -47,8 +47,8 @@ if (!isset($_SESSION['user_id'])) {
     </div>";
     exit;
 }
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -59,7 +59,6 @@ if (!isset($_SESSION['user_id'])) {
     <title>Báo cáo</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    
     <?php require('inc/links.php');  ?>
     <style>
         body {
@@ -120,18 +119,20 @@ if (!isset($_SESSION['user_id'])) {
 
         .user-message {
             background-color: #e3f2fd;
+            /* Bên phải */
             align-self: flex-end;
             border-radius: 15px 15px 5px 15px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             float: right;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .other-message {
             background-color: #ffe7e7;
+            /* Bên trái */
             align-self: flex-start;
             border-radius: 15px 15px 15px 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             float: left;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .chat-input {
@@ -176,6 +177,32 @@ if (!isset($_SESSION['user_id'])) {
             margin-top: 5px;
             text-align: right;
         }
+
+        .chat-icons {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            gap: 20px;
+        }
+
+        .chat-icons button {
+            border: none;
+            background: none;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            color: #333;
+            transition: transform 0.2s ease;
+        }
+
+        .chat-icons button:hover {
+            transform: scale(1.1);
+        }
+
+        .chat-icons i {
+            display: block;
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 
@@ -190,27 +217,40 @@ if (!isset($_SESSION['user_id'])) {
             <button id="send-btn" onclick="sendMessage()">Gửi</button>
         </div>
     </div>
+    <div class="chat-icons">
+        <button onclick="sendQuickMessage('Phân bón đã được thêm cho cây')">
+            <i class="fas fa-seedling" style="font-size: 24px; color: #28a745;"></i> Phân Bón
+        </button>
+        <button onclick="sendQuickMessage('Đã trồng cây mới')">
+            <i class="fas fa-tree" style="font-size: 24px; color: #007bff;"></i> Trồng Cây
+        </button>
+        <button onclick="sendQuickMessage('Hệ thống tưới đã hoạt động')">
+            <i class="fas fa-water" style="font-size: 24px; color: #17a2b8;"></i> Tưới Nước
+        </button>
+    </div>
 
     <script>
         function loadMessages() {
             fetch('admin/ajax/chat_handler.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'action=load_messages'
-            })
-            .then(response => response.json())
-            .then(data => {
-                const chatMessages = document.getElementById('chat-messages');
-                const userId = "<?php echo $_SESSION['user_id']; ?>";
-                chatMessages.innerHTML = data.messages.map(msg => `
-                    <div class="message ${msg.user_id == userId ? 'user-message' : 'other-message'}">
-                        <strong>${msg.sender_name}:</strong> ${msg.message}
-                        <div class="chat-timestamp">${new Date(msg.created_at).toLocaleString()}</div>
-                    </div>
-                `).join('');
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            })
-            .catch(error => console.error('Lỗi:', error));
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: 'action=load_messages'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const chatMessages = document.getElementById('chat-messages');
+                    const currentUser = "<?php echo $_SESSION['user_email'] ?? 'Admin'; ?>"; // Lấy email user hoặc "Admin"
+                    chatMessages.innerHTML = data.messages.map(msg => `
+            <div class="message ${msg.sender_name === currentUser ? 'user-message' : 'other-message'}">
+                <strong>${msg.sender_name}:</strong> ${msg.message}
+                <div class="chat-timestamp">${new Date(msg.created_at).toLocaleString()}</div>
+            </div>
+        `).join('');
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                })
+                .catch(error => console.error('Lỗi:', error));
         }
 
         function sendMessage() {
@@ -219,31 +259,53 @@ if (!isset($_SESSION['user_id'])) {
             if (!message) return;
 
             fetch('admin/ajax/chat_handler.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `action=send_message&message=${encodeURIComponent(message)}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    input.value = '';
-                    loadMessages();
-                } else {
-                    alert('Không thể gửi tin nhắn');
-                }
-            })
-            .catch(error => console.error('Lỗi:', error));
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `action=send_message&message=${encodeURIComponent(message)}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        input.value = '';
+                        loadMessages();
+                    } else {
+                        alert('Không thể gửi tin nhắn');
+                    }
+                })
+                .catch(error => console.error('Lỗi:', error));
         }
 
+        // Gọi hàm loadMessages định kỳ
         setInterval(loadMessages, 2000);
         loadMessages();
         //Bấm Enter để gửi
-        document.getElementById('chat-input').addEventListener('keydown', function (event) {
-        if (event.key === 'Enter' && !event.shiftKey) { // Kiểm tra nếu Enter được nhấn (không kèm Shift)
-            event.preventDefault(); // Ngăn xuống dòng
-            document.getElementById('send-btn').click(); // Kích hoạt nút gửi
+        document.getElementById('chat-input').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && !event.shiftKey) { // Kiểm tra nếu Enter được nhấn (không kèm Shift)
+                event.preventDefault(); // Ngăn xuống dòng
+                document.getElementById('send-btn').click(); // Kích hoạt nút gửi
+            }
+        });
+
+        function sendQuickMessage(message) {
+            fetch('admin/ajax/chat_handler.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `action=send_message&message=${encodeURIComponent(message)}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        loadMessages(); // Cập nhật tin nhắn
+                    } else {
+                        alert('Không thể gửi tin nhắn');
+                    }
+                })
+                .catch(error => console.error('Lỗi:', error));
         }
-    });
     </script>
     <script>
         function loginUser() {
@@ -269,7 +331,7 @@ if (!isset($_SESSION['user_id'])) {
                 });
         }
     </script>
-    
+
     <?php require('inc/footer.php'); ?>
 </body>
 

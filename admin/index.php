@@ -8,6 +8,23 @@ if (session_status() === PHP_SESSION_NONE) {
 if ((isset($_SESSION['adminLogin']) && $_SESSION['adminLogin'] == true)) {
     redirect('dashboard.php');
 }
+if (isset($_POST['login'])) {
+    $frm_data = filteration($_POST);
+
+    $query = "SELECT * FROM `admin_cred` WHERE `admin_name` = ? AND `admin_pass` = ?";
+    $values = [$frm_data['admin_name'], $frm_data['admin_pass']];
+
+    $res = select($query, $values, "ss");
+    if ($res->num_rows == 1) {
+        $row = mysqli_fetch_assoc($res);
+        $_SESSION['adminLogin'] = true;
+        $_SESSION['adminId'] = $row['sr_no'];
+        $_SESSION['adminName'] = $row['admin_name'];
+        redirect('dashboard.php');
+    } else {
+        alert('error', 'Đăng nhập thất bại!');
+    }
+}
 ?>
 
 
@@ -48,25 +65,7 @@ if ((isset($_SESSION['adminLogin']) && $_SESSION['adminLogin'] == true)) {
         </form>
     </div>
 
-    <?php
     
-    if (isset($_POST['login'])) {
-        $frm_data = filteration($_POST);
-
-        $query = "SELECT * FROM `admin_cred` WHERE `admin_name` = ? AND `admin_pass` = ?";
-        $values = [$frm_data['admin_name'], $frm_data['admin_pass']];
-
-        $res = select($query, $values, "ss");
-        if ($res->num_rows == 1) {
-            $row = mysqli_fetch_assoc($res);
-            $_SESSION['adminLogin'] = true;
-            $_SESSION['adminId'] = $row['sr_no'];
-            redirect('dashboard.php');
-        } else {
-            alert('error', 'Đăng nhập thất bại!');
-        }
-    }
-    ?>
 
     <?php require('inc/scripts.php'); ?>
   

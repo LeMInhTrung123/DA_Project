@@ -1,8 +1,7 @@
-:root{
+:root {
     --teal: #2ec1ac;
     --teal_hover: #279e8c;
 }
-
 
 * {
     font-family: "Poppins", sans-serif;
@@ -12,31 +11,44 @@
     font-family: "Parkinsans", cursive;
 }
 
-.temperatureColor {
-    color: #f78130;
+.temperatureColor,
+.humidityColor,
+.soiColor,
+.gasColor {
+    font-family: "Poppins", sans-serif; /* Đồng bộ font chữ */
     font-weight: bold;
     font-size: 18px;
     text-shadow: 1px 1px 2px black;
 }
 
-.custom-bg{
-    background-color: var(--teal);
-    border:1px solid var(--teal);
+.temperatureColor {
+    color: #f78130; /* NHIỆT ĐỘ */
 }
 
-.custom-bg:hover{
+.humidityColor {
+    color: #2666b8; /* ĐỘ ẨM */
+}
+
+.soiColor {
+    color: #198754; /* ĐỘ ẨM ĐẤT */
+}
+
+.gasColor {
+    color: #9966FF; /* KHÍ GAS */
+}
+
+.custom-bg {
+    background-color: var(--teal);
+    border: 1px solid var(--teal);
+}
+
+.custom-bg:hover {
     background-color: var(--teal_hover);
     border-color: var(--teal_hover);
 }
 
-.h-line{
+.h-line {
     width: 150px;
     margin: 0 auto;
     height: 1.7px;
-}
-.humidityColor{
-    color: #2666b8;
-    font-weight: bold;
-    font-size: 18px;
-    text-shadow: 1px 1px 2px black;
 }
