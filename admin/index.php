@@ -20,9 +20,10 @@ if (isset($_POST['login'])) {
         $_SESSION['adminLogin'] = true;
         $_SESSION['adminId'] = $row['sr_no'];
         $_SESSION['adminName'] = $row['admin_name'];
+        // echo "<script>alert('Mật khẩu không đúng!');</script>";
         redirect('dashboard.php');
     } else {
-        alert('error', 'Đăng nhập thất bại!');
+        echo "<script>alert('Mật khẩu không đúng!');</script>";
     }
 }
 ?>

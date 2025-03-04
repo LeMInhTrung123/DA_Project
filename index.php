@@ -139,7 +139,7 @@
     <!-- Modal Scripts -->
 
     <script>
-        var socket = new WebSocket('ws://192.168.1.206:81');
+        var socket = new WebSocket('ws://192.168.1.72:81');
 
 
         socket.onmessage = function(event) {

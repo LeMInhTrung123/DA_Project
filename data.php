@@ -88,9 +88,6 @@ $humidityData = array_reverse($humidityData);
 $soilMoistureData = array_reverse($soilMoistureData);
 $gasData = array_reverse($gasData);
 ?>
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -126,11 +123,13 @@ $gasData = array_reverse($gasData);
             text-align: center;
             margin-bottom: 20px;
         }
+
         .chart-container {
             width: 80%;
             margin: 0 auto;
             padding: 20px;
         }
+
         .h-line {
             height: 3px;
             width: 50px;
@@ -186,13 +185,27 @@ $gasData = array_reverse($gasData);
             font-weight: bold;
             margin-top: 10px;
         }
+
+        .filter-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            width: 50%;
+            margin: 0 auto 40px;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
     </style>
 </head>
 
 <body class="bg-light">
 
     <?php require('inc/header.php'); ?>
-
 
     <h2 class="mt-5 pt-5 mb-4 text-center fw-bold h-font">NÔNG TRẠI broTech </h2>
     <div class="h-line bg-dark"></div>
@@ -248,10 +261,7 @@ $gasData = array_reverse($gasData);
         </div>
     </div>
 
-
-
     <?php
-
     // Truy vấn giá trị trung bình
     $sql_avg_temp = "SELECT AVG(temperature) AS avg_temperature FROM data_agricultural_smart";
     $sql_avg_humidity = "SELECT AVG(humidity) AS avg_humidity FROM data_agricultural_smart";
@@ -335,11 +345,221 @@ $gasData = array_reverse($gasData);
         <select id="filter-select">
             <option value="hour">Giờ (Hôm nay)</option>
             <option value="day">Ngày (30 ngày gần nhất)</option>
-            <option value="month">Tháng (Năm hiện tại)</option>
+            <option value="month">Tháng (12 tháng gần nhất)</option>
         </select>
+        <button id="reset-button">Reset</button>
     </div>
-    
-    
+
+    <div class="chart-container">
+        <canvas id="tempChart1"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="humidityChart1"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="soilChart1"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="gasChart1"></canvas>
+    </div>
+
+    <!-- BIEU DO LOC DU LIEU -->
+    <script>
+        const tempCtx = document.getElementById('tempChart1').getContext('2d');
+        const humidityCtx = document.getElementById('humidityChart1').getContext('2d');
+        const soilCtx = document.getElementById('soilChart1').getContext('2d');
+        const gasCtx = document.getElementById('gasChart1').getContext('2d');
+
+        let tempChart = new Chart(tempCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Nhiệt Độ',
+                    data: [],
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    fill: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            text: 'Nhiệt Độ',
+                            display: true
+                        }
+                    },
+                    x: {
+                        title: {
+                            text: 'Thời gian đo',
+                            display: true
+                        }
+                    }
+                }
+            }
+        });
+
+        let humidityChart = new Chart(humidityCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Độ Ẩm',
+                    data: [],
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    fill: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            text: 'Độ Ẩm',
+                            display: true
+                        }
+                    },
+                    x: {
+                        title: {
+                            text: 'Thời gian đo',
+                            display: true
+                        }
+                    }
+                }
+            }
+        });
+
+        let soilChart = new Chart(soilCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Độ Ẩm Đất',
+                    data: [],
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            text: 'Độ Ẩm Đất',
+                            display: true
+                        }
+                    },
+                    x: {
+                        title: {
+                            text: 'Thời gian đo',
+                            display: true
+                        }
+                    }
+                }
+            }
+        });
+
+        let gasChart = new Chart(gasCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Khí Gas',
+                    data: [],
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    fill: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            text: 'Khí Gas',
+                            display: true
+                        }
+                    },
+                    x: {
+                        title: {
+                            text: 'Thời gian đo',
+                            display: true
+                        }
+                    }
+                }
+            }
+        });
+
+        function updateChart(chart, labels, data) {
+            chart.data.labels = labels;
+            chart.data.datasets[0].data = data;
+            chart.update();
+        }
+
+        document.getElementById('filter-select').addEventListener('change', function() {
+            const filter = this.value;
+            fetch(`filter_data.php?filter=${filter}`)
+                .then(response => response.json())
+                .then(result => {
+                    if (result.status === 'success') {
+                        const labels = result.data.map(item => item.label);
+                        updateChart(tempChart, labels, result.data.map(item => item.avg_temperature));
+                        updateChart(humidityChart, labels, result.data.map(item => item.avg_humidity));
+                        updateChart(soilChart, labels, result.data.map(item => item.avg_soilMoisture));
+                        updateChart(gasChart, labels, result.data.map(item => item.avg_gas));
+                    } else {
+                        console.error('Lỗi khi lấy dữ liệu:', result.message);
+                    }
+                })
+                .catch(error => console.error('Lỗi kết nối:', error));
+        });
+
+        document.getElementById('reset-button').addEventListener('click', function() {
+            document.getElementById('filter-select').value = 'hour';
+            fetch('filter_data.php?filter=hour')
+                .then(response => response.json())
+                .then(result => {
+                    if (result.status === 'success') {
+                        const labels = result.data.map(item => item.label);
+                        updateChart(tempChart, labels, result.data.map(item => item.avg_temperature));
+                        updateChart(humidityChart, labels, result.data.map(item => item.avg_humidity));
+                        updateChart(soilChart, labels, result.data.map(item => item.avg_soilMoisture));
+                        updateChart(gasChart, labels, result.data.map(item => item.avg_gas));
+                    } else {
+                        console.error('Lỗi khi lấy dữ liệu:', result.message);
+                    }
+                })
+                .catch(error => console.error('Lỗi kết nối:', error));
+        });
+
+        fetch('filter_data.php?filter=hour')
+            .then(response => response.json())
+            .then(result => {
+                console.log('Full JSON Response:', result);
+
+                if (result.status === 'success') {
+                    const labels = result.data.map(item => item.label);
+                    updateChart(tempChart, labels, result.data.map(item => item.avg_temperature));
+                    updateChart(humidityChart, labels, result.data.map(item => item.avg_humidity));
+                    updateChart(soilChart, labels, result.data.map(item => item.avg_soilMoisture));
+                    updateChart(gasChart, labels, result.data.map(item => item.avg_gas));
+                } else {
+                    console.error('Lỗi khi lấy dữ liệu:', result.message);
+                }
+            })
+            .catch(error => console.error('Lỗi kết nối:', error));
+    </script>
 
     <div class="gauge-container">
         <!-- Gauge cho nhiệt độ -->
@@ -377,11 +597,34 @@ $gasData = array_reverse($gasData);
             <div class="gauge__label" style="text-align: center; font-weight: bold; margin-top: 10px;">Giá trị trung bình Khí Gas</div>
         </div>
     </div>
+    <div style="text-align: center; margin: 20px;">
+        <button id="send-email-btn" class="btn btn-primary" style="padding: 10px 20px; font-size: 18px;">
+            Gửi thông báo qua email
+        </button>
+    </div>
+    <script>
+        document.getElementById('send-email-btn').addEventListener('click', function() {
+            fetch('send_email.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                })
+                .catch(error => {
+                    console.error('Lỗi kết nối:', error);
+                    alert('Không thể gửi thông báo.');
+                });
+        });
+    </script>
 
 
 
     <script>
-        const socket = new WebSocket('ws://192.168.1.206:81'); // Kết nối WebSocket tới server
+        const socket = new WebSocket('wss://game-introduce.onrender.com'); // Kết nối WebSocket tới server
 
         socket.onopen = () => {
             console.log('WebSocket connection established.');
@@ -467,9 +710,6 @@ $gasData = array_reverse($gasData);
         //     // gasChart.update();
         // }
     </script>
-
-
-
 
     <!-- tao bieu do -->
     <script>
@@ -568,9 +808,7 @@ $gasData = array_reverse($gasData);
         const gasGauge = document.querySelector(".gauge__fill--gas").closest(".gauge");
         setGaugeValue(gasGauge, normalizedGas, `${avgGas}ppm`);
     </script>
-
-
-    <?php require('inc/footer.php'); ?>
+    
 
     <script>
         function loginUser() {
@@ -597,9 +835,7 @@ $gasData = array_reverse($gasData);
                 });
         }
     </script>
-
-
-
+    <?php require('inc/footer.php'); ?>
 </body>
 
 </html>

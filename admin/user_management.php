@@ -8,6 +8,7 @@ adminLogin();
 
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - UserManagement</title>
     <?php require('inc/links.php'); ?>
@@ -21,13 +22,7 @@ adminLogin();
             margin: auto;
         }
 
-        h3 {
-            font-weight: bold;
-            color: #212529;
-            margin-bottom: 30px;
-            text-align: center;
-            text-transform: uppercase;
-        }
+        
 
         .card {
             border-radius: 10px;
@@ -105,11 +100,12 @@ adminLogin();
     </style>
 </head>
 
-<body>
-    <?php require('inc/header.php'); ?>
+<body class="bg-light">
+    
+     <?php require('inc/header.php'); ?>
         
     <div class="container mt-5">
-        <h3>Quản Lý Người Dùng</h3>
+        <h3 class="text-center mb-4">QUẢN LÝ NGƯỜI DÙNG</h3>
 
         <!-- Form thêm người dùng -->
         <div class="card mb-5">
@@ -153,6 +149,7 @@ adminLogin();
                             <th>ID</th>
                             <th>Email</th>
                             <th>Họ và Tên</th>
+                            <th>ID Login</th>
                             <th>Thao tác</th>
                         </tr>
                     </thead>
@@ -183,6 +180,7 @@ adminLogin();
                         'Content-Type': 'application/x-www-form-urlencoded'
                     },
                     body: `register_user=1&email=${email}&name=${name}&password=${password}`
+
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -199,30 +197,68 @@ adminLogin();
         }
 
         function loadUsers() {
-            fetch('ajax/settings_crud.php?get_users=1')
-                .then(response => response.json())
-                .then(data => {
-                    const tableBody = document.getElementById('user-table-body');
-                    tableBody.innerHTML = '';
-                    data.forEach(user => {
-                        tableBody.innerHTML += `
+    fetch('ajax/settings_crud.php?get_users=1')
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.getElementById('user-table-body');
+            tableBody.innerHTML = ''; 
+
+            data.forEach(user => {
+                tableBody.innerHTML += `
                     <tr>
                         <td>${user.id}</td>
                         <td>${user.email}</td>
                         <td>${user.name}</td>
+                        <td>${user.id_login ? user.id_login : 'NULL'}</td>
                         <td>
+                            <button class="btn btn-warning btn-sm me-2" onclick="editUser(${user.id}, '${user.email}', '${user.name}', '${user.id_login}')">Sửa</button>
                             <button class="btn btn-danger btn-sm" onclick="deleteUser(${user.id})">Xóa</button>
                         </td>
                     </tr>
                 `;
-                    });
-                })
-                .catch(error => {
-                    console.error('Lỗi:', error);
-                    alert('Không thể tải danh sách người dùng.');
-                });
+            });
+        })
+        .catch(error => {
+            console.error('Lỗi:', error);
+            alert('Không thể tải danh sách người dùng.');
+        });
+}
 
+        function editUser(id, email, name, idLogin) {
+    document.getElementById('edit-user-id').value = id;
+    document.getElementById('edit-email').value = email;
+    document.getElementById('edit-name').value = name;
+    document.getElementById('edit-id-login').value = idLogin ? idLogin : '';
+    new bootstrap.Modal(document.getElementById('editUserModal')).show();
+}
+function updateUser() {
+    const id = document.getElementById('edit-user-id').value;
+    const email = document.getElementById('edit-email').value;
+    const name = document.getElementById('edit-name').value;
+    const idLogin = document.getElementById('edit-id-login').value;
+
+    fetch('ajax/settings_crud.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `update_user=1&id=${id}&email=${email}&name=${name}&id_login=${idLogin}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        if (data.status === 'success') {
+            loadUsers();
+            bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
         }
+    })
+    .catch(error => {
+        console.error('Lỗi:', error);
+        alert('Có lỗi xảy ra, vui lòng thử lại.');
+    });
+}
+
+
 
         function deleteUser(userId) {
             if (!confirm("Bạn có chắc chắn muốn xóa người dùng này?")) return;
@@ -251,6 +287,36 @@ adminLogin();
 
         document.addEventListener('DOMContentLoaded', loadUsers);
     </script>
+    <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh sửa người dùng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-user-form">
+                    <input type="hidden" id="edit-user-id">
+                    <div class="mb-3">
+                        <label class="form-label">Email:</label>
+                        <input type="email" id="edit-email" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Họ và Tên:</label>
+                        <input type="text" id="edit-name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">ID Login:</label>
+                        <input type="text" id="edit-id-login" class="form-control">
+                    </div>
+                    <div class="text-center">
+                        <button type="button" class="btn btn-primary" onclick="updateUser()">Cập nhật</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 </body>
 

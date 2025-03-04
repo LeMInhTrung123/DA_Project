@@ -41,13 +41,32 @@ require('admin/inc/essentials.php');
                         Báo cáo
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link me-2"
+                        href="attendance.php"
+                        style="font-weight: <?php echo basename($_SERVER['SCRIPT_NAME']) == 'attendance.php' ? 'bold' : 'normal'; ?>; 
+                              color: <?php echo basename($_SERVER['SCRIPT_NAME']) == 'attendance.php' ? '#007bff' : 'inherit'; ?>; 
+                              border-bottom: <?php echo basename($_SERVER['SCRIPT_NAME']) == 'attendance.php' ? '2px solid #007bff' : 'none'; ?>;">
+                        Điểm danh
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link me-2"
+                        href="predict.php"
+                        style="font-weight: <?php echo basename($_SERVER['SCRIPT_NAME']) == 'predict.php' ? 'bold' : 'normal'; ?>; 
+                              color: <?php echo basename($_SERVER['SCRIPT_NAME']) == 'predict.php' ? '#007bff' : 'inherit'; ?>; 
+                              border-bottom: <?php echo basename($_SERVER['SCRIPT_NAME']) == 'predict.php' ? '2px solid #007bff' : 'none'; ?>;">
+                        Dự đoán
+                    </a>
+                </li>
             </ul>
-            <div class="d-flex">
+            <div class="d-flex align-items-center">
                 <?php if (isset($_SESSION['adminLogin']) && $_SESSION['adminLogin'] === true): ?>
                     <span class="me-3 text-success fw-bold">
                         Chào Admin, <?php echo htmlspecialchars($_SESSION['adminName']); ?>!
                         <i class="bi bi-emoji-smile"></i>
                     </span>
+                    <a href="admin/dashboard.php" class="btn btn-warning btn-sm me-2">Quay Lại Admin</a>
                     <a href="logout.php" class="btn btn-outline-danger shadow-none">Đăng xuất</a>
                 <?php elseif (isset($_SESSION['user_email'])): ?>
                     <span class="me-3 text-success fw-bold">
@@ -64,7 +83,6 @@ require('admin/inc/essentials.php');
         </div>
     </div>  
 </nav>
-
 
 <!-- Đăng nhập Modal -->
 <div class="modal fade" id="loginModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">

@@ -16,7 +16,7 @@ adminLogin();
         body {
             background-color: #f8f9fa;
         }
-
+        
         .table-container {
             background-color: #fff;
             padding: 20px;
@@ -71,7 +71,7 @@ adminLogin();
     <?php require('inc/header.php'); ?>
 
     <div class="container py-5">
-        <h3 class="text-center mb-4">Danh sách Nông trại</h3>
+        <h3 class="text-center mb-4">DANH SÁCH NÔNG TRẠI</h3>
 
         <!-- Table Container -->
         <div class="table-container">

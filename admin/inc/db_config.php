@@ -4,11 +4,17 @@
     $pass = '';
     $db = 'demo';
 
-    $con = mysqli_connect($hname,$uname,$pass,$db, 3306);
+    // Kết nối MySQL
+    $con = mysqli_connect($hname, $uname, $pass, $db);
 
-    if(!$con){
-        die("Cannot Connect to Database".mysqli_connect_error());
+    // Kiểm tra kết nối
+    if (!$con) {
+        die("Cannot Connect to Database: " . mysqli_connect_error());
+    }else {
+        error_log("Connected to database successfully");
     }
+    
+
 
     if (!function_exists('filteration')) {
         function filteration($data) {
@@ -27,7 +33,10 @@
         function select($sql, $values, $datatypes) {
             $con = $GLOBALS['con'];
             if ($stmt = mysqli_prepare($con, $sql)) {
-                mysqli_stmt_bind_param($stmt, $datatypes, ...$values);
+                // Chỉ gọi bind_param nếu có tham số
+                if (!empty($datatypes) && !empty($values)) {
+                    mysqli_stmt_bind_param($stmt, $datatypes, ...$values);
+                }
                 if (mysqli_stmt_execute($stmt)) {
                     $res = mysqli_stmt_get_result($stmt);
                     mysqli_stmt_close($stmt);
@@ -61,5 +70,4 @@
             }
         }
     }
-    
 ?>

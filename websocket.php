@@ -42,7 +42,7 @@ class MyWebSocket implements MessageComponentInterface
         $conn->close();
     }
 }
-$app = new Ratchet\App("192.168.1.206", 81, "0.0.0.0");
+$app = new Ratchet\App("192.168.1.72", 81, "0.0.0.0");
 $app->route('/', new MyWebSocket, array('*'));
 
 $app->run();

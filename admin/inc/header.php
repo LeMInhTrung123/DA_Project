@@ -1,7 +1,7 @@
 <div class="container-fluid bg-dark text-light p-3 d-flex align-items-center justify-content-between sticky-top">
     <h3 class="mb-0 h-font">broTech</h3>
     <div>
-        <a href="../index.php" class="btn btn-light btn-sm me-2">Vào Trang Chủ</a>
+        <a href="../index.php" class="btn btn-warning btn-sm me-2">Vào Trang Chủ</a>
         <a href="logout.php" class="btn btn-light btn-sm">Đăng Xuất</a>
     </div>
 </div>

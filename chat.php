@@ -48,11 +48,8 @@ if (!isset($_SESSION['adminLogin']) && !isset($_SESSION['user_email'])) {
     exit;
 }
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -203,6 +200,58 @@ if (!isset($_SESSION['adminLogin']) && !isset($_SESSION['user_email'])) {
             display: block;
             margin-bottom: 5px;
         }
+        
+        .status-item {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .toggle-btn {
+            border: none;
+            background-color: #f0f0f0;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .toggle-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .toggle-btn[data-state="on"] {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .toggle-btn[data-state="off"] {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        
+        .control-title {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            color: #007bff;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
     </style>
 </head>
 
@@ -218,18 +267,98 @@ if (!isset($_SESSION['adminLogin']) && !isset($_SESSION['user_email'])) {
         </div>
     </div>
     <div class="chat-icons">
-        <button onclick="sendQuickMessage('Phân bón đã được thêm cho cây')">
+        <button onclick="sendQuickMessage('Phân bón đã được bón cho cây')">
             <i class="fas fa-seedling" style="font-size: 24px; color: #28a745;"></i> Phân Bón
         </button>
-        <button onclick="sendQuickMessage('Đã trồng cây mới')">
+        <button onclick="sendQuickMessage('Đã trồng thêm cây mới')">
             <i class="fas fa-tree" style="font-size: 24px; color: #007bff;"></i> Trồng Cây
         </button>
-        <button onclick="sendQuickMessage('Hệ thống tưới đã hoạt động')">
+        <button onclick="sendQuickMessage('Hệ thống tưới nước đã hoạt động')">
             <i class="fas fa-water" style="font-size: 24px; color: #17a2b8;"></i> Tưới Nước
+        </button>
+        <button onclick="sendQuickMessage('Quạt đã bật')">
+            <i class="fas fa-fan" style="font-size: 24px; color: #ffc107;"></i> Bật Quạt
+        </button>
+        <button onclick="sendQuickMessage('Cửa đã mở')">
+            <i class="fas fa-door-open" style="font-size: 24px; color: #ff5722;"></i> Mở Cửa
+        </button>
+        <button onclick="sendQuickMessage('Rèm đã được kéo')">
+            <i class="fas fa-window-maximize" style="font-size: 24px; color: #6c757d;"></i> Kéo Rèm
+        </button>
+    </div>
+    <div class="control-title">
+        Điều khiển
+    </div>
+    
+    <div class="status-item">
+        <button class="toggle-btn" data-state="off" onclick="toggleStatus(this, 'water')">
+            <i class="fas fa-water" style="font-size: 24px; color: #17a2b8;"></i> Tưới Nước (Tắt)
+        </button>
+        <button class="toggle-btn" data-state="off" onclick="toggleStatus(this, 'fan')">
+            <i class="fas fa-fan" style="font-size: 24px; color: #ffc107;"></i> Bật Quạt (Tắt)
+        </button>
+        <button class="toggle-btn" data-state="off" onclick="toggleStatus(this, 'door')">
+            <i class="fas fa-door-open" style="font-size: 24px; color: #ff5722;"></i> Mở Cửa (Tắt)
+        </button>
+        <button class="toggle-btn" data-state="off" onclick="toggleStatus(this, 'curtain')">
+            <i class="fas fa-window-maximize" style="font-size: 24px; color: #6c757d;"></i> Kéo Rèm (Tắt)
         </button>
     </div>
 
+
+
     <script>
+    
+        const deviceStates = {
+            water: false,
+            fan: false,
+            door: false,
+            curtain: false
+        };
+        
+        async function toggleStatus(button, device) {
+            const currentState = button.getAttribute("data-state");
+        
+            // Chuyển đổi trạng thái thiết bị
+            const newState = currentState === "off";
+            deviceStates[device] = newState;
+        
+            // Cập nhật giao diện nút bấm
+            button.setAttribute("data-state", newState ? "on" : "off");
+            button.innerHTML = `<i class="${button.querySelector('i').classList.value}"></i> ${getDeviceLabel(device)} (${newState ? "Bật" : "Tắt"})`;
+            button.style.backgroundColor = newState ? "#28a745" : "#dc3545"; // Xanh khi bật, đỏ khi tắt
+            console.log(deviceStates)
+        
+            // Gửi API cập nhật trạng thái
+            try {
+                const response = await fetch("http://localhost:8080/control", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(deviceStates)
+                });
+        
+                const result = await response.json();
+                console.log("API Response:", result);
+            } catch (error) {
+                console.error("Lỗi khi gửi yêu cầu API:", error);
+                alert("Có lỗi xảy ra khi cập nhật trạng thái!");
+            }
+        }
+        
+        // Chuyển đổi tên hiển thị của thiết bị
+        function getDeviceLabel(device) {
+            switch (device) {
+                case "water": return "Tưới Nước";
+                case "fan": return "Bật Quạt";
+                case "door": return "Mở Cửa";
+                case "curtain": return "Kéo Rèm";
+                default: return "";
+            }
+        }
+
+
         function loadMessages() {
             fetch('admin/ajax/chat_handler.php', {
                     method: 'POST',
